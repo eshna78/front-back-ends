@@ -2,7 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, Users, Award, BookOpen, Briefcase, Heart } from 'lucide-react';
 
-const Home = () => {
+interface HomeProps {
+  onRegister: () => void;
+}
+
+const Home: React.FC<HomeProps> = ({ onRegister }) => {
   return (
     <div>
       {/* Hero Section */}
@@ -13,9 +17,12 @@ const Home = () => {
             <h1 className="text-4xl md:text-5xl font-bold mb-6">Welcome to the Namal Alumni Network</h1>
             <p className="text-xl mb-8">Connecting graduates, fostering relationships, and building a stronger community.</p>
             <div className="flex flex-wrap gap-4">
-              <Link to="/membership" className="px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-green-900 font-bold rounded-md transition-colors">
+              <button 
+                onClick={onRegister}
+                className="px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-green-900 font-bold rounded-md transition-colors"
+              >
                 Join the Network
-              </Link>
+              </button>
               <Link to="/events" className="px-6 py-3 bg-transparent hover:bg-green-700 border-2 border-yellow-400 text-yellow-400 font-bold rounded-md transition-colors">
                 Upcoming Events
               </Link>

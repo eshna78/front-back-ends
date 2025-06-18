@@ -1,60 +1,13 @@
 import React, { useState } from 'react';
 import { Users, Award, Calendar, BookOpen, Mail, Check, Star, Quote } from 'lucide-react';
-const Membership = () => {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    graduationYear: '',
-    degreeProgram: '',
-    currentPosition: '',
-    currentLocation: '',
-    membershipType: '',
-    password: '',
-  });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+import { useAuth } from '../context/AuthContext';
 
-  const handleSubmit = async () => {
-    setLoading(true);
-    setError(null);
+interface MembershipProps {
+  onRegister: () => void;
+}
 
-    try {
-      // Simulate API call - replace with your actual registration logic
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Simulate success
-      console.log('Registration data:', {
-        ...formData,
-        graduationYear: parseInt(formData.graduationYear),
-      });
-      
-      setSuccess(true);
-      setFormData({
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: '',
-        graduationYear: '',
-        degreeProgram: '',
-        currentPosition: '',
-        currentLocation: '',
-        membershipType: '',
-        password: '',
-      });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred during registration');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleMembershipSelect = (type : string) => {
-    setFormData(prev => ({ ...prev, membershipType: type }));
-    document.getElementById('registration-form')?.scrollIntoView({ behavior: 'smooth' });
-  };
+const Membership: React.FC<MembershipProps> = ({ onRegister }) => {
+  const { user } = useAuth();
 
   return (
     <div>
@@ -65,12 +18,19 @@ const Membership = () => {
           <div className="max-w-3xl">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">Join Our Alumni Network</h1>
             <p className="text-xl mb-8">Connect with fellow graduates, access exclusive benefits, and stay engaged with the Namal community.</p>
-            <button 
-              onClick={() => document.getElementById('benefits')?.scrollIntoView({ behavior: 'smooth' })}
-              className="px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-green-900 font-bold rounded-md transition-colors"
-            >
-              Become a Member Today
-            </button>
+            {!user && (
+              <button 
+                onClick={onRegister}
+                className="px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-green-900 font-bold rounded-md transition-colors"
+              >
+                Become a Member Today
+              </button>
+            )}
+            {user && (
+              <div className="bg-green-700 p-4 rounded-lg">
+                <p className="text-lg">Welcome back, {user.firstName}! You're already a member of our network.</p>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -173,12 +133,14 @@ const Membership = () => {
                     <span className="ml-2 text-gray-600">Basic job board access</span>
                   </li>
                 </ul>
-                <button 
-                  onClick={() => handleMembershipSelect('Basic')}
-                  className="w-full px-4 py-2 bg-green-800 hover:bg-green-700 text-white font-bold rounded-md transition-colors"
-                >
-                  Register Now
-                </button>
+                {!user && (
+                  <button 
+                    onClick={onRegister}
+                    className="w-full px-4 py-2 bg-green-800 hover:bg-green-700 text-white font-bold rounded-md transition-colors"
+                  >
+                    Register Now
+                  </button>
+                )}
               </div>
             </div>
             
@@ -211,12 +173,14 @@ const Membership = () => {
                     <span className="ml-2 text-gray-600">Full job board access</span>
                   </li>
                 </ul>
-                <button 
-                  onClick={() => handleMembershipSelect('Premium')}
-                  className="w-full px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-green-900 font-bold rounded-md transition-colors"
-                >
-                  Join Now
-                </button>
+                {!user && (
+                  <button 
+                    onClick={onRegister}
+                    className="w-full px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-green-900 font-bold rounded-md transition-colors"
+                  >
+                    Join Now
+                  </button>
+                )}
               </div>
             </div>
             
@@ -248,200 +212,15 @@ const Membership = () => {
                     <span className="ml-2 text-gray-600">Special alumni merchandise</span>
                   </li>
                 </ul>
-                <button 
-                  onClick={() => handleMembershipSelect('Lifetime')}
-                  className="w-full px-4 py-2 bg-green-800 hover:bg-green-700 text-white font-bold rounded-md transition-colors"
-                >
-                  Get Lifetime Access
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Registration Form */}
-      <section id="registration-form" className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-green-800 mb-4">Register for Membership</h2>
-              <p className="text-xl text-gray-600">
-                Complete the form below to join our alumni network
-              </p>
-            </div>
-            
-            <div className="bg-gray-50 p-8 rounded-lg shadow-md">
-              {error && (
-                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-                  {error}
-                </div>
-              )}
-              
-              {success && (
-                <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
-                  Registration successful! Please check your email to verify your account.
-                </div>
-              )}
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div>
-                  <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-                  <input
-                    type="text"
-                    id="firstName"
-                    required
-                    value={formData.firstName}
-                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-                  <input
-                    type="text"
-                    id="lastName"
-                    required
-                    value={formData.lastName}
-                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                  <input
-                    type="email"
-                    id="email"
-                    required
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                  <input
-                    type="password"
-                    id="password"
-                    required
-                    value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="graduationYear" className="block text-sm font-medium text-gray-700 mb-1">Graduation Year</label>
-                  <select
-                    id="graduationYear"
-                    required
-                    value={formData.graduationYear}
-                    onChange={(e) => setFormData({ ...formData, graduationYear: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                {!user && (
+                  <button 
+                    onClick={onRegister}
+                    className="w-full px-4 py-2 bg-green-800 hover:bg-green-700 text-white font-bold rounded-md transition-colors"
                   >
-                    <option value="">Select Year</option>
-                    {Array.from({ length: 16 }, (_, i) => 2010 + i).map(year => (
-                      <option key={year} value={year}>{year}</option>
-                    ))}
-                  </select>
-                </div>
+                    Get Lifetime Access
+                  </button>
+                )}
               </div>
-              
-              <div className="mb-6">
-                <label htmlFor="degreeProgram" className="block text-sm font-medium text-gray-700 mb-1">Degree Program</label>
-                <select
-                  id="degreeProgram"
-                  required
-                  value={formData.degreeProgram}
-                  onChange={(e) => setFormData({ ...formData, degreeProgram: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                >
-                  <option value="">Select Program</option>
-                  <option value="BS Computer Science">BS Computer Science</option>
-                  <option value="BS Electrical Engineering">BS Electrical Engineering</option>
-                  <option value="BS Mechanical Engineering">BS Mechanical Engineering</option>
-                  <option value="BBA">BBA</option>
-                  <option value="MBA">MBA</option>
-                  <option value="MS Computer Science">MS Computer Science</option>
-                  <option value="MS Electrical Engineering">MS Electrical Engineering</option>
-                </select>
-              </div>
-              
-              <div className="mb-6">
-                <label htmlFor="currentPosition" className="block text-sm font-medium text-gray-700 mb-1">Current Position</label>
-                <input
-                  type="text"
-                  id="currentPosition"
-                  value={formData.currentPosition}
-                  onChange={(e) => setFormData({ ...formData, currentPosition: e.target.value })}
-                  placeholder="e.g., Software Engineer at Google"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                />
-              </div>
-              
-              <div className="mb-6">
-                <label htmlFor="currentLocation" className="block text-sm font-medium text-gray-700 mb-1">Current Location</label>
-                <input
-                  type="text"
-                  id="currentLocation"
-                  value={formData.currentLocation}
-                  onChange={(e) => setFormData({ ...formData, currentLocation: e.target.value })}
-                  placeholder="City, Country"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                />
-              </div>
-              
-              <div className="mb-6">
-                <label htmlFor="membershipType" className="block text-sm font-medium text-gray-700 mb-1">Membership Type</label>
-                <select
-                  id="membershipType"
-                  required
-                  value={formData.membershipType}
-                  onChange={(e) => setFormData({ ...formData, membershipType: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                >
-                  <option value="">Select Membership</option>
-                  <option value="Basic">Basic (Free)</option>
-                  <option value="Premium">Premium (PKR 5,000/year)</option>
-                  <option value="Lifetime">Lifetime (PKR 25,000)</option>
-                </select>
-              </div>
-              
-              <div className="mb-8">
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    required
-                    className="h-4 w-4 text-green-800 focus:ring-green-500 border-gray-300 rounded"
-                  />
-                  <span className="ml-2 text-gray-600">
-                    I agree to receive communications from the Namal Alumni Network
-                  </span>
-                </label>
-              </div>
-              
-              <button
-                onClick={handleSubmit}
-                disabled={loading}
-                className="w-full px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-green-900 font-bold rounded-md transition-colors disabled:opacity-50"
-              >
-                {loading ? 'Processing...' : 'Complete Registration'}
-              </button>
             </div>
           </div>
         </div>
@@ -522,14 +301,16 @@ const Membership = () => {
             </div>
           </div>
           
-          <div className="text-center mt-12">
-            <button 
-              onClick={() => document.getElementById('membership-types')?.scrollIntoView({ behavior: 'smooth' })}
-              className="px-8 py-3 bg-green-800 hover:bg-green-700 text-white font-bold rounded-md transition-colors"
-            >
-              Join Our Success Stories
-            </button>
-          </div>
+          {!user && (
+            <div className="text-center mt-12">
+              <button 
+                onClick={onRegister}
+                className="px-8 py-3 bg-green-800 hover:bg-green-700 text-white font-bold rounded-md transition-colors"
+              >
+                Join Our Success Stories
+              </button>
+            </div>
+          )}
         </div>
       </section>
     </div>
